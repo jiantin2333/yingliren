@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>应黎壬</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #111;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+            touch-action: manipulation;
+        }
+        
+        .popup-text {
+            position: absolute;
+            font-weight: bold;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 1000;
+            max-width: 90vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .style1 { 
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 4vw;
+        }
+        .style2 { 
+            font-family: 'ZCOOL KuaiLe', cursive;
+            font-size: 5vw;
+        }
+        .style3 { 
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 4.5vw;
+        }
+        
+        .flash {
+            animation: flashAppear 0.3s ease-out forwards;
+        }
+        
+        @keyframes flashAppear {
+            0% { opacity: 0; transform: scale(0.2); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+        
+        .glow {
+            text-shadow: 0 0 3px #ff0000, 0 0 6px #ff0000;
+            animation: glowPulse 1.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glowPulse {
+            from { text-shadow: 0 0 3px #ff0000, 0 0 6px #ff0000; }
+            to { text-shadow: 0 0 5px #ff0000, 0 0 8px #ff0000; }
+        }
+        
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(255,0,0,0.1),
+                rgba(255,0,0,0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            z-index: 0;
+            opacity: 0;
+            animation: noiseAppear 0.4s ease-out forwards;
+        }
+        
+        .noise-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10vw;
+            color: rgba(255,0,0,0.1);
+            font-family: 'Noto Sans SC', sans-serif;
+            text-align: center;
+            z-index: 1;
+            opacity: 0;
+            animation: noiseTextAppear 0.4s ease-out forwards;
+            max-width: 90vw;
+            word-break: break-all;
+        }
+        
+        @keyframes noiseAppear {
+            0% { opacity: 0; }
+            100% { opacity: 0.3; }
+        }
+        
+        @keyframes noiseTextAppear {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            100% { opacity: 0.2; transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        .glitch-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            z-index: 2000;
+        }
+        
+        .glitch-text {
+            position: absolute;
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 5vw;
+            font-weight: bold;
+            color: #ff0000;
+            text-shadow: 0 0 5px #ff0000;
+            animation: glitch 0.1s infinite;
+            max-width: 90vw;
+            word-break: break-all;
+        }
+        
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-5px, 5px); }
+            40% { transform: translate(-5px, -5px); }
+            60% { transform: translate(5px, 5px); }
+            80% { transform: translate(5px, -5px); }
+            100% { transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+    <audio id="bg-music" autoplay loop>
+        <source src="https://z.wiki/u/hqLwaf" type="audio/mpeg">
+        您的浏览器不支持音频元素。
+    </audio>
+
+    <div class="glitch-container" id="glitch-container"></div>
+
+    <script>
+        // 自动播放音乐（处理浏览器自动播放策略）
+        document.addEventListener('DOMContentLoaded', function() {
+            const music = document.getElementById('bg-music');
+            function attemptPlay() {
+                music.play()
+                    .catch(error => {
+                        document.body.addEventListener('click', function() {
+                            music.play();
+                        }, { once: true });
+                    });
+            }
+            attemptPlay();
+        });
+        
+        // 您的文案内容（已修改）
+        const texts = [
+            "操你妈", "不准走", "你不能走", "你又想丢下我", "你他妈就是个骗子", 
+            "命令我", "我好想你", "我求你", "为什么", "回来", "再见是什么意思", 
+            "你玩够了", "别走", "怪我？", "我像个小丑", "别再想了", 
+            "应黎壬你就是个废物", "是我错了", "是我自作多情", "结束了", 
+            "真他妈的可笑", "找别人", "好啊", "祝你幸福", "分手费", "装模作样", 
+            "你哭什么", "是不是觉得我很好笑", "我恨你", "你满意了吗", 
+            "再多看我一眼", "别碰我", "我知道你还会回来", "别走", "我错了", 
+            "我好难受", "别走", "再多说一点", "别信她", "我需要你", 
+            "抓住我", "操", "滚开", "为什么又是这样", "我好难受"
+        ];
+
+        // 需要荧光效果的文字
+        const glowTexts = [
+            "操你妈", "你他妈就是个骗子", "滚开", "我恨你", "真他妈的可笑",
+            "应黎壬你就是个废物", "装模作样", "操"
+        ];
+        
+        // 需要闪现效果的文字
+        const flashTexts = [
+            "我好想你", "我求你", "为什么", "回来", "别走",
+            "我错了", "我好难受", "我需要你"
+        ];
+        
+        // 字体样式类
+        const styles = ['style1', 'style2', 'style3'];
+        
+        // 创建噪声层
+        function createNoiseLayer() {
+            const noiseOverlay = document.createElement('div');
+            noiseOverlay.className = 'noise-overlay';
+            
+            const noiseText = document.createElement('div');
+            noiseText.className = 'noise-text';
+            noiseText.textContent = '我忘不掉你';
+            
+            document.body.appendChild(noiseOverlay);
+            document.body.appendChild(noiseText);
+            
+            setTimeout(() => {
+                noiseOverlay.remove();
+                noiseText.remove();
+            }, 400);
+        }
+        
+        // 创建弹出文字的函数
+        function createPopupText() {
+            const text = texts[Math.floor(Math.random() * texts.length)];
+            const style = styles[Math.floor(Math.random() * styles.length)];
+            
+            const element = document.createElement('div');
+            element.className = `popup-text ${style}`;
+            element.textContent = text;
+            
+            element.style.left = Math.random() * window.innerWidth + 'px';
+            element.style.top = Math.random() * window.innerHeight + 'px';
+            
+            const opacity = Math.random() * 0.5 + 0.5;
+            const redValue = Math.floor(Math.random() * 80 + 175);
+            element.style.color = `rgba(${redValue}, 0, 0, ${opacity})`;
+            
+            if (glowTexts.includes(text)) {
+                element.classList.add('glow');
+            } else if (flashTexts.includes(text)) {
+                element.classList.add('flash');
+            }
+            
+            document.body.appendChild(element);
+
+            if (!flashTexts.includes(text)) {
+                element.style.opacity = '0';
+                element.style.transform = 'scale(0.5)';
+                element.style.transition = 'all 0.3s ease-out';
+                
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                    element.style.transform = 'scale(1)';
+                }, 10);
+
+                setTimeout(() => {
+                    if (element.parentNode) {
+                        element.style.opacity = '0';
+                        element.style.transform = 'scale(0.5)';
+                        setTimeout(() => {
+                            if (element.parentNode) {
+                                element.parentNode.removeChild(element);
+                            }
+                        }, 300);
+                    }
+                }, Math.random() * 3000 + 2000);
+            } else {
+                setTimeout(() => {
+                    if (element.parentNode) {
+                        element.parentNode.removeChild(element);
+                    }
+                }, 300);
+            }
+        }
+
+        // 创建故障抖动效果
+        function createGlitchEffect() {
+            const container = document.getElementById('glitch-container');
+            container.style.display = 'block';
+            
+            // 创建满屏"别丢下我"文字
+            for (let i = 0; i < 50; i++) { // 减少数量以适应手机
+                const glitchText = document.createElement('div');
+                glitchText.className = 'glitch-text';
+                glitchText.textContent = '别丢下我';
+                glitchText.style.left = Math.random() * window.innerWidth + 'px';
+                glitchText.style.top = Math.random() * window.innerHeight + 'px';
+                glitchText.style.fontSize = (Math.random() * 3 + 4) + 'vw';
+                glitchText.style.opacity = Math.random() * 0.5 + 0.5;
+                container.appendChild(glitchText);
+            }
+            
+            // 1秒后移除效果
+            setTimeout(() => {
+                container.innerHTML = '';
+                container.style.display = 'none';
+            }, 3000);
+        }
+
+        // 页面加载后立刻开始
+        function startSpamming() {
+            createNoiseLayer();
+            
+            setTimeout(() => {
+                createPopupText();
+                setInterval(createPopupText, Math.random() * 100 + 50);
+            }, 500);
+            
+            // 19秒后触发故障抖动效果
+            setTimeout(createGlitchEffect, 19000);
+        }
+
+        window.onload = startSpamming;
+    </script>
+</body>
+</html>
